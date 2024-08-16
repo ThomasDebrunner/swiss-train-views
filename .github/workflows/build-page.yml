@@ -20,4 +20,4 @@ jobs:
       working-directory: page 
       run: |
         npm install
-        npm build
+        npm run build
