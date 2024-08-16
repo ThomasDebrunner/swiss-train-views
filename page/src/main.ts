@@ -3,6 +3,8 @@ import 'leaflet/dist/leaflet.css'
 import L from 'leaflet'
 import proj4 from 'proj4'
 
+import data from '../train_data.json'
+
 const lv03 = "+proj=somerc +lat_0=46.9524055555556 +lon_0=7.43958333333333 +k_0=1 +x_0=600000 +y_0=200000 +ellps=bessel +towgs84=674.374,15.056,405.346,0,0,0,0 +units=m +no_defs +type=crs";
 const wgs84 = proj4.WGS84;
 
@@ -55,11 +57,6 @@ async function main() {
       maxZoom: 17,
       minZoom: 8
     }).addTo(map);
-
-
-  // fetch data
-  const response = await fetch('public/train_data.json')
-  const data = await response.json()
 
   // plot lines
   data.forEach((line: any) => {
