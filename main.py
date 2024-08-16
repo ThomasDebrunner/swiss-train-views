@@ -91,12 +91,12 @@ def read_train_data():
 
 
 def seek_terrain_collision(model, point, altitude, vector, viewer_height):
-    east, north = point
     # vector is in direction of travel
     left_vector = np.array([vector[1], -vector[0]])
     right_vector = -left_vector
     view_altitude = altitude + viewer_height
     horizon = horizon_distance(viewer_height)
+    print(horizon)
 
     left_distance = horizon
     right_distance = horizon
