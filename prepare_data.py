@@ -96,7 +96,6 @@ def seek_terrain_collision(model, point, altitude, vector, viewer_height):
     right_vector = -left_vector
     view_altitude = altitude + viewer_height
     horizon = horizon_distance(viewer_height)
-    print(horizon)
 
     left_distance = horizon
     right_distance = horizon
@@ -141,6 +140,29 @@ def analyze_altitudes(model, train_data, viewer_height=2):
     return train_data
 
 
+def remove_tunnels(train_data, squared_filtered_threshold=30):
+    for line in train_data:
+        elevations = line['elevations']
+        if len(elevations) < 20:
+            # skip short lines, no meaningful filtering possible
+            continue
+
+        left_distances = line['left_distances']
+        right_distances = line['right_distances']
+        # squared elevation differential
+        diffs = (np.diff(elevations)) ** 2
+        # running average filter
+        kernel_size = 5
+        kernel = np.ones(kernel_size) / kernel_size
+        diffs_filtered = np.convolve(diffs, kernel, mode='same')
+
+        # where the filtered diffs are below the threshold, we have a tunnel
+        # set the distances to 0
+        for i, diff in enumerate(diffs_filtered.tolist()):
+            if diff > squared_filtered_threshold:
+                left_distances[i] = 0
+                right_distances[i] = 0
+
 def main():
     east = 599977.858
     north = 198954.5319999999
@@ -152,6 +174,8 @@ def main():
     train_data = read_train_data()
     # add altitudes to train data
     train_data = analyze_altitudes(model, train_data)
+
+    remove_tunnels(train_data)
 
     # store as json
     with open('train_data.json', 'w') as f:
